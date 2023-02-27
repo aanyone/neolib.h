@@ -119,7 +119,7 @@ footer {
 	  
 #accueil {
    background-image:url("images/background/Neolib.png");
-   background-size: 100% 100%;
+  /* background-size: 100% 100%;*/
     color:black;
       margin : 0;
       padding : 0;
