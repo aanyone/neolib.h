@@ -55,7 +55,7 @@ footer {
 
       }
 #propos {
-    background-color:#556B2F;
+    background-color:black;
     background-attachment:fixed;
     background-size:100% 100%;
     color:white;
@@ -118,8 +118,10 @@ footer {
       }
 	  
 #accueil {
+	background-color: black;
    background-image:url("images/background/Neolib.png");
-   background-size: 60% 80%;
+   background-size: 100% 100%;
+   background-repeat: no-repeat;
     color:black;
       margin : 0;
       padding : 0;
