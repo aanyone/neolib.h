@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+
+        <!-- https://getbootstrap.com/ -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+        <!-- https://jquery.com/ -->
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
+        <!-- https://fontawesome.com/ -->
+        <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" rel="stylesheet">
+
+        <!-- https://www.ubuntu.com/ -->
+        <link href="https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png" rel="icon" type="image/png">
+
+        <link href="/static/rouge.css" rel="stylesheet">
+
+        <script>
+
+            
+
+    $(function() {
+
+        // Hide less-comfortable descriptions
+        $('[data-less]').addClass('d-none');
+
+        // Listen for checkbox
+        $('#filter').on('change', function() {
+            if ($('#filter').is(':checked')) {
+                $('[data-less]').removeClass('d-none');
+                $('[data-more]').addClass('d-none');
+            }
+            else {
+                $('[data-more]').removeClass('d-none');
+                $('[data-less]').addClass('d-none');
+            }
+            filter();
+        }).trigger('change');
+
+        // Listen for searches
+        $('#q').on('change keyup', function() {
+            filter();
+        });
+        $('#q').closest('form').on('submit', function(e) {
+            e.preventDefault();
+        });
+
+        // Filter results
+        filter();
+
+        // Unless user's followed a link to a heading, filter index
+        if (window.location.hash) {
+            $('#filter').prop('checked', false).trigger('change');
+        }
+
+        // Give focus to search (after body is visible)
+        else {
+            $(function() {
+                $('#q').focus();
+            });
+        }
+    });
+
+    function filter() {
+        let q = $('#q').val().trim().split(/\s+/);
+        if (q.length === 1 && q[0] === '') {
+            q = [];
+        }
+        $('h1').each(function(index, element) {
+            const $h1 = $(element);
+            const header = $h1.val();
+            const $ul = $h1.next('ul');
+            $ul.children('li').each(function(index, element) {
+                const $li = $(element);
+                if ($('#filter').prop('checked') && $li.attr('data-filter') === undefined) {
+                    $li.addClass('filtered');
+                }
+                else {
+                    $li.removeClass('filtered');
+                }
+                const haystack = $h1.text() + $li.text().trim();
+                let matches = q.filter(function(s) {
+                    return haystack.match(new RegExp(s, 'i')) !== null;
+                });
+                if (matches.length === q.length) {
+                    $li.removeClass('mismatched');
+                }
+                else {
+                    $li.addClass('mismatched');
+                }
+            });
+            if ($ul.children('li:not(.filtered, .mismatched)').length > 0) {
+                $h1.removeClass('d-none');
+                $ul.removeClass('d-none');
+            }
+            else {
+                $h1.addClass('d-none');
+                $ul.addClass('d-none');
+            }
+        });
+    };
+
+
+
+        </script>
+
+        <script>
+
+            $(function() {
+
+                // Add borders to tables
+                $('.table').addClass('table-bordered');
+
+                // Enable popovers
+                $('[data-bs-toggle="popover"]').each(function(index, element) {
+                    new bootstrap.Popover(element, {
+                        boundary: 'viewport',
+                        html: true,
+                        placement: 'bottom',
+                        trigger: 'focus'
+                    });
+                });
+
+                // Ensure all elements are styled the same
+                $('h1').addClass('border-bottom fw-bold h2 mb-3 pb-2 pt-4');
+                $('h2').addClass('fw-bold h3');
+
+                // Ensure last heading can be anchored atop page
+                $(window).resize(function() {
+                    const top = $('h1').last().offset().top;
+                    const margin = $(window).height() - ($('body').outerHeight() - top);
+                    $('body').css('margin-bottom', Math.max(0, Math.ceil(margin)) + 'px');
+                });
+                $(window).trigger('resize');
+
+                // Reveal body
+                $('body').removeClass('invisible');
+            });
+
+        </script>
+
+        <style>
+
+            /* Style popovers */
+            .popover {
+                font-family: inherit;
+                max-width: 100%;
+            }
+
+            /* Wrap long words (and URLs, whether linked or not), especially on mobile,
+            but not in buttons and not in tables, which should instead scroll horizontally */
+            * {
+                word-break: break-word;
+            }
+            button, table * {
+                word-break: normal;
+            }
+
+            /* Remove underlining */
+            a {
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            nav a:hover {
+                text-decoration: none;
+            }
+
+            /* Match Gmail's yellow */
+            a[data-bs-toggle=popover] {
+                border-bottom: 2px solid rgb(252, 237, 193);
+                box-shadow: inset 0 -2px 0 rgb(252, 237, 193);
+                cursor: help;
+            }
+            a[data-bs-toggle=popover]:hover {
+                background-color: rgb(252, 237, 193);
+            }
+
+            /* Match pre tags */
+            code {
+                color: inherit;
+            }
+
+            /* A la Jekyll theme */
+            code, pre {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: calc(.2rem - 3px) 0.2rem;
+            }
+            pre code {
+                background-color: initial;
+                border: initial;
+                padding: initial;
+            }
+
+            /* Don't shrink these */
+            code, pre {
+                font-size: inherit;
+            }
+
+            /* Don't italicize */
+            dl dt {
+                font-style: normal;
+            }
+
+            /* Don't fill viewport */
+            .table {
+                width: inherit;
+            }
+
+        </style>
+
+        <style>
+
+            
+
+    /* Don't display */
+    .filtered, .mismatched {
+        display: none;
+    }
+
+    /* No bullets */
+    ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    
+
+        </style>
+
+        <title>NEOLIB DOCUMENTATION</title>
+
+    </head>
+
+    <body class="font-monospace invisible pb-5">
+
+        <nav class="bg-dark navbar navbar-dark navbar-expand-xl px-4">
+            <a class="navbar-brand" href="/"><i class="fas fa-list pe-3"></i>NEOLIB DOCUMENTATION</a>
+        </nav>
+
+        <div class="container-fluid mt-2 px-4">
+            
+
+    <p class="mb-3 mt-4">
+        DOCUMENTATION for the NEOLIB Library
+    </p>
+
+    
+
+        <h1 id="neolib.h">
+            <a href="#neolib.h">neolib.h</a>
+        </h1>
+
+        <ul>
+
+            
+            
+                
+
+                    <!-- Title DERIVATIVE -->
+					<span data-more> DERIVATIVE </span>
+
+                    <li data-filter>
+                        <a href="doc/derive">derive</a>
+                        -
+                        <span data-more>used to derive a math expression</span>
+                    </li>
+
+                
+
+            
+            
+					<!-- Title EQUATION -->
+					<br>
+					<span data-more> EQUATION </span>
+                    
+
+                    <li data-filter>
+                        <a href="doc/equation">equation</a>
+                        -
+                        <span data-more> TODO </span>
+                    </li>
+
+                
+
+            
+            
+					<!-- Title POLYNOMIALS -->
+					<br>
+					<span data-more> POLYNOMIALS </span>
+                    
+
+                    <li data-filter>
+                        <a href="doc/pol_add">pol_add</a>
+                        -
+                        <span data-more>used for adding 2 polynomials</span>
+                    </li>
+                
+                    
+                    <li data-filter>
+                        <a href="doc/pol_sub">pol_sub</a>
+                        -
+                        <span data-more>used for substracting 2 polynomials</span>
+                    </li>
+
+
+                    <li data-filter>
+                        <a href="doc/pol_root">pol_root</a>
+                        -
+                        <span data-more>used to search if a polynomials have a root</span>
+                    </li>             
+
+                    <li>
+                        <a href="doc/pol_mul">pol_mul</a>
+                        -
+                        <span data-more>used for multipliing 2 polynomials</span>
+                    </li>
+
+                    <li data-filter>
+                        <a href="doc/pol_div">pol_div</a>
+                        -
+                        <span data-more>use for dividing polynomials</span>
+                    </li>
+
+
+
+					
+					<br>
+					<span data-more> MATRIX </span>
+                    
+
+                    <li data-filter>
+                        <a href="doc/mat_print">mat_print</a>
+                        -
+                        <span data-more>used to print a matrix</span>
+                    </li>
+                
+                    
+                    <li data-filter>
+                        <a href="doc/mat_transpose">mat_transpose</a>
+                        -
+                        <span data-more>used to transpose a matrix</span>
+                    </li>
+
+
+                    <li data-filter>
+                        <a href="doc/mat_add">mat_add</a>
+                        -
+                        <span data-more>used to add 2 matrix</span>
+                    </li>             
+
+                    <li>
+                        <a href="doc/mat_sub">mat_sub</a>
+                        -
+                        <span data-more>used to substract 2 matrix</span>
+                    </li>
+
+                    <li data-filter>
+                        <a href="doc/mat_mul">mat_mul</a>
+                        -
+                        <span data-more>used to multiply 2 matrix</span>
+                    </li>
+					
+<!--
+                    <li data-filter>
+                        <a href="doc/mat_det">mat_det</a>
+                        -
+                        <span data-more>used to calculate the determinant of a matrix</span>
+                    </li>             
+-->
+
+                    <li data-filter>
+                        <a href="doc/mat_comatrice">mat_comatrice</a>
+                        -
+                        <span data-more>used to calculate the adjugate matrix</span>
+                    </li>
+					
+                
+
+        </ul>
+
+        </div>
+
+    </body>
+
+</html>
